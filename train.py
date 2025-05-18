@@ -28,8 +28,9 @@ def prepare_dataset():
 def compute_metrics(metric, eval_pred):
     predictions, labels = eval_pred
     predictions = predictions.squeeze()
-    return metric.compute(predictions=predictions, references=labels, squared=False)
-
+    mse = metric.compute(predictions=predictions, references=labels)["mse"]
+    rmse = np.sqrt(mse)
+    return {"mse": mse, "rmse": rmse}
 # Training pipeline
 def train():
     # LoRA configuration
