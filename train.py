@@ -28,7 +28,7 @@ def prepare_dataset():
 def compute_metrics(metric, eval_pred):
     predictions, labels = eval_pred
     predictions = predictions.squeeze()
-    return metric.compute(predictions=predictions, references=labels)
+    return metric.compute(predictions=predictions, references=labels, squared=False)
 
 # Training pipeline
 def train():
