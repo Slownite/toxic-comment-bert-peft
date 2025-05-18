@@ -72,8 +72,8 @@ def train():
     trainer = Trainer(
         model=model,
         args=training_args,
-        train_dataset=dataset["train"].shuffle(seed=42).select(range(10000)),
-        eval_dataset=dataset["test"].shuffle(seed=42).select(range(10000)),
+        train_dataset=dataset["train"].shuffle(seed=42).select(range(1000)),
+        eval_dataset=dataset["test"].shuffle(seed=42).select(range(1000)),
         tokenizer=tokenizer,
         compute_metrics=p_compute_metrics,
     )
