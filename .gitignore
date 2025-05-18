@@ -1,0 +1,81 @@
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+*.pyo
+*.pyd
+*.pkl
+*.log
+*.tmp
+.DS_Store
+
+# === Virtual Environments ===
+.env
+.venv
+env/
+venv/
+ENV/
+
+# === Jupyter / Colab Notebooks ===
+.ipynb_checkpoints/
+*.ipynb~ 
+
+# === PyTorch / Hugging Face ===
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.onnx
+runs/
+output/
+results/
+*.h5
+
+# Hugging Face caches
+~/.cache/huggingface
+~/.huggingface
+**/cache/
+**/.cache/
+
+# Transformers Trainer logs and outputs
+checkpoint-*/
+trainer_state.json
+
+# === AWS / SageMaker ===
+*.sagemaker/
+*.aws/
+*.json
+*.yaml
+awslogs.log
+*.out
+
+# === Docker ===
+*.dockerfile
+*.image
+docker-compose.override.yml
+
+# === VS Code / IDEs ===
+.vscode/
+.idea/
+*.code-workspace
+
+# === System files ===
+*.swp
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# === Model Artifacts ===
+/model/
+saved_model/
+*.tar.gz
+*.zip
+*.tflite
+
+# === Misc ===
+logs/
+datasets/
+cache/
+colab_outputs/
