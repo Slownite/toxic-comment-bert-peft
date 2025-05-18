@@ -59,9 +59,9 @@ def train():
     training_args = TrainingArguments(
         output_dir="model",
         learning_rate=2e-5,
-        per_device_train_batch_size=16,
-        per_device_eval_batch_size=16,
-        num_train_epochs=2,
+        per_device_train_batch_size=64,
+        per_device_eval_batch_size=64,
+        num_train_epochs=10,
         weight_decay=0.01,
         eval_strategy="epoch",
         save_strategy="epoch",
@@ -72,14 +72,15 @@ def train():
     trainer = Trainer(
         model=model,
         args=training_args,
-        train_dataset=dataset["train"].shuffle(seed=42).select(range(1000)),
-        eval_dataset=dataset["test"].shuffle(seed=42).select(range(1000)),
+        train_dataset=dataset["train"].shuffle(seed=42).select(range(10000)),
+        eval_dataset=dataset["test"].shuffle(seed=42).select(range(10000)),
         tokenizer=tokenizer,
         compute_metrics=p_compute_metrics,
     )
 
     # Start training
     trainer.train()
+    model.save_pretrained("model/")
 
 # Entry point
 def main():
