@@ -24,7 +24,9 @@ def prepare_dataset():
     dataset = dataset.map(preprocess_labels)
     dataset = dataset.map(tokenizing, batched=True)
     dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
-
+    dataset = dataset.remove_columns(
+        [col for col in dataset["train"].column_names if col not in ["input_ids", "attention_mask", "labels"]]
+    )
     # force dataset column type to int64
     features = Features({
         'input_ids': Value('int32'),
