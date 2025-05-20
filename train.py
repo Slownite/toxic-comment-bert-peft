@@ -1,5 +1,5 @@
 from transformers import AutoModelForSequenceClassification, AutoTokenizer, Trainer, TrainingArguments
-from datasets import load_dataset
+from datasets import load_dataset, Features, Value
 from functools import partial
 import evaluate
 import numpy as np
@@ -24,6 +24,15 @@ def prepare_dataset():
     dataset = dataset.map(preprocess_labels)
     dataset = dataset.map(tokenizing, batched=True)
     dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
+
+    # force dataset column type to int64
+    features = Features({
+        'input_ids': Value('int32'),
+        'attention_mask': Value('int32'),
+        'labels': Value('int64')  # <-- this is the key
+    })
+
+    dataset = dataset.cast(features)
     sample = dataset["train"][0]
     print("Label:", sample["labels"])
     print("Type:", type(sample["labels"]))
