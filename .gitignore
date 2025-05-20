@@ -69,6 +69,7 @@ Desktop.ini
 
 # === Model Artifacts ===
 /model/
+inference/model/
 saved_model/
 *.tar.gz
 *.zip
