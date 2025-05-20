@@ -22,6 +22,7 @@ def prepare_dataset():
     dataset = ds.rename_column("toxicity", "labels")
     dataset = dataset.map(preprocess_labels)
     dataset = dataset.map(tokenizing, batched=True)
+    dataset = dataset.map(lambda x: {"labels": torch.tensor(x["labels"], dtype=torch.long)})
     dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
     return dataset, tokenizer
 
