@@ -59,8 +59,8 @@ def train():
     training_args = TrainingArguments(
         output_dir="model",
         learning_rate=2e-5,
-        per_device_train_batch_size=128,
-        per_device_eval_batch_size=128,
+        per_device_train_batch_size=32,
+        per_device_eval_batch_size=32,
         num_train_epochs=10,
         weight_decay=0.01,
         eval_strategy="epoch",
