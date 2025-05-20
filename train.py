@@ -47,7 +47,8 @@ def train():
     # Load model and apply LoRA for binary classification
     model = AutoModelForSequenceClassification.from_pretrained(
         "bert-base-uncased",
-        num_labels=2  # Binary classification: 0 = not toxic, 1 = toxic
+        num_labels=2,
+        problem_type="single_label_classification"
     )
     model = get_peft_model(model, lora_config)
 
