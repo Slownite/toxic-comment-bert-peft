@@ -4,33 +4,35 @@ from functools import partial
 import evaluate
 import numpy as np
 from peft import LoraConfig, TaskType, get_peft_model
+from sklearn.metrics import accuracy_score, f1_score
 
 # Tokenize the input text
 def tokenize(tokenizer, data):
     return tokenizer(data["text"], padding="max_length", truncation=True)
 
-# Keep toxicity scores as float labels
+# Convert float toxicity scores into binary labels
 def preprocess_labels(example):
-    return {"labels": float(example["labels"])}
+    return {"labels": int(float(example["labels"]) > 0.5)}
 
 # Prepare and preprocess the dataset
 def prepare_dataset():
-    tokenizer = AutoTokenizer.from_pretrained("google-bert/bert-base-uncased")
+    tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
     tokenizing = partial(tokenize, tokenizer)
-    ds = load_dataset("google/civil_comments")
+    ds = load_dataset("civil_comments")
     dataset = ds.rename_column("toxicity", "labels")
     dataset = dataset.map(preprocess_labels)
     dataset = dataset.map(tokenizing, batched=True)
     dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
     return dataset, tokenizer
 
-# Metric function for evaluation
-def compute_metrics(metric, eval_pred):
-    predictions, labels = eval_pred
-    predictions = predictions.squeeze()
-    mse = metric.compute(predictions=predictions, references=labels)["mse"]
-    rmse = np.sqrt(mse)
-    return {"mse": mse, "rmse": rmse}
+# Metric function for binary classification
+def compute_metrics(eval_pred):
+    logits, labels = eval_pred
+    preds = np.argmax(logits, axis=1)
+    acc = accuracy_score(labels, preds)
+    f1 = f1_score(labels, preds)
+    return {"accuracy": acc, "f1": f1}
+
 # Training pipeline
 def train():
     # LoRA configuration
@@ -42,18 +44,15 @@ def train():
         lora_dropout=0.1
     )
 
-    # Load model and apply LoRA for regression
+    # Load model and apply LoRA for binary classification
     model = AutoModelForSequenceClassification.from_pretrained(
-        "google-bert/bert-base-uncased",
-        num_labels=1,
-        problem_type="regression"
+        "bert-base-uncased",
+        num_labels=2  # Binary classification: 0 = not toxic, 1 = toxic
     )
     model = get_peft_model(model, lora_config)
 
     # Prepare data and metrics
     dataset, tokenizer = prepare_dataset()
-    metrics = evaluate.load("mse")
-    p_compute_metrics = partial(compute_metrics, metrics)
 
     # Define training arguments
     training_args = TrainingArguments(
@@ -61,11 +60,12 @@ def train():
         learning_rate=2e-5,
         per_device_train_batch_size=32,
         per_device_eval_batch_size=32,
-        num_train_epochs=10,
+        num_train_epochs=5,
         weight_decay=0.01,
-        eval_strategy="epoch",
+        evaluation_strategy="epoch",
         save_strategy="epoch",
         load_best_model_at_end=True,
+        metric_for_best_model="f1"
     )
 
     # Trainer setup
@@ -73,14 +73,15 @@ def train():
         model=model,
         args=training_args,
         train_dataset=dataset["train"].shuffle(seed=42).select(range(10000)),
-        eval_dataset=dataset["test"].shuffle(seed=42).select(range(10000)),
+        eval_dataset=dataset["test"].shuffle(seed=42).select(range(5000)),
         tokenizer=tokenizer,
-        compute_metrics=p_compute_metrics,
+        compute_metrics=compute_metrics,
     )
 
     # Start training
     trainer.train()
-    model.save_pretrained("model/")
+    model.save_pretrained("inference/model/final")
+    tokenizer.save_pretrained("inference/model/final")
 
 # Entry point
 def main():

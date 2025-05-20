@@ -19,5 +19,5 @@ def predict(text: str)->dict:
     return {"toxic": toxic, "confidence": prob}
 
 if __name__ == "__main__":
-    logits = predict("you are a very nice person")
+    logits = predict("you are beautiful")
     print(logits)
