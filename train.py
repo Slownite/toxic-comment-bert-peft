@@ -13,7 +13,7 @@ def tokenize(tokenizer, data):
 
 # Convert float toxicity scores into binary labels
 def preprocess_labels(example):
-    return {"labels": int(float(example["labels"]) > 0.5)}
+    return {"labels": torch.tensor(int(float(example["labels"]) > 0.5), dtype=torch.long)}
 
 # Prepare and preprocess the dataset
 def prepare_dataset():
@@ -23,7 +23,6 @@ def prepare_dataset():
     dataset = ds.rename_column("toxicity", "labels")
     dataset = dataset.map(preprocess_labels)
     dataset = dataset.map(tokenizing, batched=True)
-    dataset = dataset.map(lambda x: {"labels": torch.tensor(x["labels"], dtype=torch.long)})
     dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
     return dataset, tokenizer
 
