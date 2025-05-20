@@ -5,6 +5,7 @@ import evaluate
 import numpy as np
 from peft import LoraConfig, TaskType, get_peft_model
 from sklearn.metrics import accuracy_score, f1_score
+import torch
 
 # Tokenize the input text
 def tokenize(tokenizer, data):
