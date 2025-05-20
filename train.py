@@ -24,6 +24,10 @@ def prepare_dataset():
     dataset = dataset.map(preprocess_labels)
     dataset = dataset.map(tokenizing, batched=True)
     dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
+    sample = dataset["train"][0]
+    print("Label:", sample["labels"])
+    print("Type:", type(sample["labels"]))
+    print("Tensor dtype (if tensor):", getattr(sample["labels"], "dtype", "not a tensor"))
     return dataset, tokenizer
 
 # Metric function for binary classification
