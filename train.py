@@ -13,7 +13,8 @@ def tokenize(tokenizer, data):
 
 # Convert float toxicity scores into binary labels
 def preprocess_labels(example):
-    return {"labels": torch.tensor(int(float(example["labels"]) > 0.5), dtype=torch.int)}
+    # print(int(example["labels"] > 0.5))
+    return {"labels": int((example["labels"]) > 0.5)}
 
 # Prepare and preprocess the dataset
 def prepare_dataset():
@@ -23,11 +24,9 @@ def prepare_dataset():
     dataset = ds.rename_column("toxicity", "labels")
     dataset = dataset.map(preprocess_labels)
     dataset = dataset.map(tokenizing, batched=True)
-    dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
-    sample = dataset["train"][0]
-    print("Label:", sample["labels"])
-    print("Type:", type(sample["labels"]))
-    print("Tensor dtype (if tensor):", getattr(sample["labels"], "dtype", "not a tensor"))
+    dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"], dtype=torch.long)
+    print(dataset["train"][0]["labels"])
+    print(type(dataset["train"][0]["labels"]))
     return dataset, tokenizer
 
 # Metric function for binary classification
@@ -46,7 +45,8 @@ def train():
         inference_mode=False,
         r=8,
         lora_alpha=32,
-        lora_dropout=0.1
+        lora_dropout=0.1,
+        
     )
 
     # Load model and apply LoRA for binary classification
