@@ -1,5 +1,5 @@
 from transformers import AutoModelForSequenceClassification, AutoTokenizer, Trainer, TrainingArguments
-from datasets import load_dataset
+from datasets import load_dataset, concatenate_datasets
 from functools import partial
 import evaluate
 import numpy as np
@@ -25,8 +25,9 @@ def prepare_dataset():
     dataset = dataset.map(preprocess_labels)
     dataset = dataset.map(tokenizing, batched=True)
     dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"], dtype=torch.long)
-    print(dataset["train"][0]["labels"])
-    print(type(dataset["train"][0]["labels"]))
+    negative = dataset["train"].filter(lambda x: x["labels"] == 0)
+    positive = dataset["train"].filter(lambda x: x["labels"] == 1).select(range(len(negative)))
+    balanced_train = concatenate_datasets([positive, negative]).shuffle(seed=42)
     return dataset, tokenizer
 
 # Metric function for binary classification
@@ -78,7 +79,7 @@ def train():
     trainer = Trainer(
         model=model,
         args=training_args,
-        train_dataset=dataset["train"].shuffle(seed=42).select(range(10000)),
+        train_dataset=dataset["train"],
         eval_dataset=dataset["test"].shuffle(seed=42).select(range(5000)),
         tokenizer=tokenizer,
         compute_metrics=compute_metrics,
