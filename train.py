@@ -24,9 +24,9 @@ def prepare_dataset():
     dataset = ds.rename_column("toxicity", "labels")
     dataset = dataset.map(preprocess_labels)
     dataset = dataset.map(tokenizing, batched=True)
-    dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"], dtype=torch.long)
     positive = dataset["train"].filter(lambda x: x["labels"] == 1)
     negative = dataset["train"].filter(lambda x: x["labels"] == 0).select(range(len(positive)))
+    dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"], dtype=torch.long)
     balanced_train = concatenate_datasets([positive, negative]).shuffle(seed=42)
     return balanced_train, dataset, tokenizer
 
