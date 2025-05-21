@@ -28,7 +28,7 @@ def prepare_dataset():
     positive = dataset["train"].filter(lambda x: x["labels"] == 1).select(range(1000))
     negative = dataset["train"].filter(lambda x: x["labels"] == 0).select(range(1000))
     balanced_train = concatenate_datasets([positive, negative]).shuffle(seed=42)
-    return dataset, tokenizer
+    return balanced_train, dataset, tokenizer
 
 # Metric function for binary classification
 def compute_metrics(eval_pred):
@@ -59,7 +59,7 @@ def train():
     model = get_peft_model(model, lora_config)
 
     # Prepare data and metrics
-    dataset, tokenizer = prepare_dataset()
+    balanced_train, dataset, tokenizer = prepare_dataset()
 
     # Define training arguments
     training_args = TrainingArguments(
@@ -79,7 +79,7 @@ def train():
     trainer = Trainer(
         model=model,
         args=training_args,
-        train_dataset=dataset["train"],
+        train_dataset=balanced_train,
         eval_dataset=dataset["test"].shuffle(seed=42).select(range(5000)),
         tokenizer=tokenizer,
         compute_metrics=compute_metrics,
