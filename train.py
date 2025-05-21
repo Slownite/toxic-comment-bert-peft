@@ -25,8 +25,8 @@ def prepare_dataset():
     dataset = dataset.map(preprocess_labels)
     dataset = dataset.map(tokenizing, batched=True)
     dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"], dtype=torch.long)
-    negative = dataset["train"].filter(lambda x: x["labels"] == 0)
-    positive = dataset["train"].filter(lambda x: x["labels"] == 1).select(range(len(negative)))
+    positive = dataset["train"].filter(lambda x: x["labels"] == 1)
+    negative = dataset["train"].filter(lambda x: x["labels"] == 0).select(range(len(positive)))
     balanced_train = concatenate_datasets([positive, negative]).shuffle(seed=42)
     return dataset, tokenizer
 
