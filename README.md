@@ -76,8 +76,7 @@ This command runs distributed training using Hugging Face Accelerate. PEFT with 
 ## 🌐 Serving the Model (Locally)
 
 ```bash
-cd inference
-uvicorn app:app --host 0.0.0.0 --port 8000 --reload
+uvicorn inference.app:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 Once launched, send a POST request to `/predict` with JSON input:
