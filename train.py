@@ -28,6 +28,7 @@ def prepare_dataset():
     negative = dataset["train"].filter(lambda x: x["labels"] == 0).select(range(len(positive)))
     dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"], dtype=torch.long)
     balanced_train = concatenate_datasets([positive, negative]).shuffle(seed=42)
+    balanced_train.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"], dtype=torch.long)
     return balanced_train, dataset, tokenizer
 
 # Metric function for binary classification
