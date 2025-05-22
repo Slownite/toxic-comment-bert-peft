@@ -1,0 +1,40 @@
+
+# Bytecode and cache
+__pycache__/
+*.py[cod]
+*.so
+*.pyd
+
+# Jupyter and notebooks
+*.ipynb
+
+# Git and VCS
+.git/
+.gitignore
+
+# Python virtual environments
+.env
+.venv/
+venv/
+env/
+
+# System files
+.DS_Store
+*.swp
+*.bak
+
+# Local data and training outputs
+*.log
+*.csv
+*.tsv
+*.parquet
+*.pt
+*.bin
+*.h5
+
+# Large artifacts
+results/
+checkpoints/
+runs/
+wandb/
+model/

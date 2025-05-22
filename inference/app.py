@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from model import predict
+from inference.model import predict
 
 class RequestBody(BaseModel):
-    text: str
+    text: list[str]
 
 app = FastAPI()
 
@@ -13,4 +13,4 @@ async def root():
 
 @app.post("/inference")
 async def inference(input: RequestBody):
-    return predict(input.text)
+    return [predict(text) for text in input.text]
