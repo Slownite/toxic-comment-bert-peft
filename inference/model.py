@@ -3,8 +3,8 @@ from peft import PeftModel
 import torch
 def initialize_model():
     base = AutoModelForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=1)
-    model = PeftModel.from_pretrained(base, "model/final")
-    tokenizer = AutoTokenizer.from_pretrained("model/final", local_files_only=True)
+    model = PeftModel.from_pretrained(base, "inference/model/final/")
+    tokenizer = AutoTokenizer.from_pretrained("inference/model/final/")
     return model.eval(), tokenizer
 
 model, tokenizer = initialize_model()
