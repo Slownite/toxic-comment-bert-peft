@@ -1,5 +1,5 @@
 {
-  description = "Semantic Search Engine Project";
+  description = "toxic-comment-bert-peft Project";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
